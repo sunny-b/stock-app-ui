@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= title
+
+  table(style='width:100%', border='1')
+    tr
+      th Position
+      th Username
+      th Networth
+    each user, idx in users
+      tr
+        th= idx+1
+        th= user.username
+        th= `$${user.networth}`
