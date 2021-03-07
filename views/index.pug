@@ -29,22 +29,55 @@ block content
 
   #stock_price
 
+  form(id='stock_buy')
+    h3 Buy Stock
+    label(for='stock_ticker') Stock Ticker
+      input(type='text' name='stock_ticker' placeholder='' id='stock_ticker_buy' required)
+    label(for='quantity') Quantity
+      input(type='text' name='quantity' placeholder='' value='1' id='stock_quantity_buy' required)
+    input(type='submit' value='Buy')
+
+  #stock_buy_confirmation
+
+
   script.
     $(document).ready(function() {
         $('#stockprice_form').submit(function(e) {
           e.preventDefault();
-          console.log("HERE")
 
           var data = {};
           data.ticker = $('#stock_ticker').val()
 
           $.ajax({
-            type: 'GET',
+            method: 'GET',
             data: data,
             contentType: 'application/json',
             url: "/stockPrice",
             success: function(result) {
               $("#stock_price").html(result);
           }})
+        })
+
+        $('#stock_buy').submit(function(e) {
+          e.preventDefault();
+
+          var data = {};
+          data.ticker = $('#stock_ticker_buy').val()
+          data.quantity = $('#stock_quantity_buy').val()
+          console.log(data.ticker)
+          console.log(data.quantity)
+
+          $.ajax({
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            url: "/stockBuy",
+            success: function() {
+              $("#stock_buy_confirmation").html('<p>Buy was successful!</p>')
+            },
+            error: function() {
+              $("#stock_buy_confirmation").html('<p>Buy failed, try again!</p>')
+            }
+          })
         })
     })

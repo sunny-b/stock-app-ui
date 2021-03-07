@@ -166,8 +166,6 @@ app.get('/leaderboard', async (req, res, next) => {
 
 app.get('/stockPrice', async (req, res, next) => {
   try {
-    console.log(req)
-    console.log(req.query.ticker)
     const price = await quoter.fetchStockPrice(req.query.ticker.toLowerCase())
 
     res.render('stock_price', {
@@ -176,6 +174,29 @@ app.get('/stockPrice', async (req, res, next) => {
   } catch (e) {
     handleErr(e)
     loginErr = true
+  }
+})
+
+app.post('/stockBuy', async (req, res, next) => {
+  try {
+    console.log(req)
+    const price = await quoter.fetchStockPrice(req.body.ticker.toLowerCase())
+    const quantity = +req.body.quantity
+
+    console.log(price, quantity)
+
+    const currentBalance = await store.accountBalance(req.session.username)
+
+    if (currentBalance < (price*quantity)) {
+      console.log('HERE')
+      res.status(400).send('Not enough cash to buy')
+      return
+    }
+
+    await store.buy(req.session.username, req.body.ticker, price, quantity, 'stock');
+    res.status(201).send('Successful')
+  } catch (e) {
+    handleErr(e)
   }
 })
 
